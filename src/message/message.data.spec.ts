@@ -84,6 +84,7 @@ describe('MessageData', () => {
           conversationId: conversationId,
           conversation: { id: conversationId.toHexString() },
           likesCount: 0,
+          tags: [],
           sender: { id: senderId.toHexString() },
         }
       );
@@ -186,4 +187,51 @@ describe('MessageData', () => {
 
     });
   });
+
+  describe('filterByTags', () => {
+    it('successfully filters messages by tags', async () => {
+      const conversationId = new ObjectID();
+
+      const tags: TagDto[] = [
+        { id: 'tag1', type: TagType.subTopic },
+        { id: 'tag2', type: TagType.subTopic },
+      ];
+
+      const message = await messageData.create(
+        { conversationId, text: 'Message to tag' },
+        senderId,
+      );
+
+      const updatedMessage = await messageData.updateTags(
+        new ObjectID(message.id),
+        tags,
+      );
+
+      const messages = await messageData.getMessagesGroupedByConversation(
+        [updatedMessage.conversationId],
+        undefined,
+        undefined,
+        "tag1",
+        TagType.subTopic
+      );
+
+      expect(messages[0].messages).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ message: 'Message to tag' })
+        ])
+      );
+
+      const messagesWithTag3 = await messageData.getMessagesGroupedByConversation(
+        [updatedMessage.conversationId],
+        undefined,
+        undefined,
+        "tag3",
+        TagType.subTopic
+      );
+  
+      expect(messagesWithTag3).toEqual([]);
+    });
+  });
+
+  
 });
