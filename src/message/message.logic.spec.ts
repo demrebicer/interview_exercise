@@ -8,6 +8,8 @@ import {
   GifType,
   MessageDto,
   PollDto,
+  TagDto,
+  TagType,
 } from './models/message.dto';
 import {
   ConversationChannel,
@@ -59,7 +61,6 @@ import {
 } from '../conversation/models/lastMessage.dto';
 import { Permission } from '../conversation/models/Permission.dto';
 import { LastReadInput } from '../conversation/models/LastReadInput.dto';
-import { Tag } from '../conversation/models/CreateChatConversation.dto';
 
 const UNAUTHORISED_USER = new ObjectId('321b1a570ff321b1a570ff01');
 const validUser: IAuthenticatedUser = {
@@ -413,6 +414,12 @@ describe('MessageLogic', () => {
         this.getMockMessage(messageId.toHexString(), userId.toHexString()),
       );
     }
+
+    updateTags(messageId: ObjectID, tags: TagType[]) {
+      return Promise.resolve(
+        this.getMockMessage(messageId.toHexString(), senderId.toHexString()),
+      );
+    }
   }
 
   class MockPermissionsService {
@@ -462,7 +469,7 @@ describe('MessageLogic', () => {
     product: Product;
     context: Context[];
     permissions?: Permission[];
-    tags?: Tag[];
+    tags?: TagDto[];
   }
 
   class MockedConversationLogic {
@@ -537,7 +544,7 @@ describe('MessageLogic', () => {
     ): Promise<LastMessageOutput[]> {
       throw new Error('Method not implemented.');
     }
-    updateTags(conversationId: string, tags: Tag[]): Promise<ConversationDTO> {
+    updateTags(conversationId: string, tags: TagDto[]): Promise<ConversationDTO> {
       throw new Error('Method not implemented.');
     }
 
@@ -1445,5 +1452,51 @@ describe('MessageLogic', () => {
         messageLogic.removeVote(messageId, option, validUser),
       ).rejects.toEqual(expectedError);
     });
+  });
+
+  describe('updateTags', () => {
+    it('should be defined', () => {
+      expect(messageLogic.updateTags).toBeDefined();
+    });
+   
+    it('should be able to update tags', async () => {
+      jest
+      .spyOn(messageData, 'getMessage')
+      .mockReturnValue(Promise.resolve(mockPollMessage));
+      jest.spyOn(messageData, 'updateTags');
+      
+      var tags: TagDto[] = [
+        { id: 'tag1', type: TagType.subTopic },
+        { id: 'tag2', type: TagType.subTopic },
+      ];
+
+      await messageLogic.updateTags(messageId, tags, validUser);
+
+      expect(messageData.updateTags).toHaveBeenCalledWith(
+        messageId,
+        tags,
+      );
+
+    });
+
+    it('should throw an error when user is not authorised', async () => {
+      jest
+        .spyOn(messageData, 'getMessage')
+        .mockReturnValue(Promise.resolve(mockPollMessage));
+      jest.spyOn(messageData, 'updateTags');
+
+      const tags: TagDto[] = [
+        { id: 'tag1', type: TagType.subTopic },
+        { id: 'tag2', type: TagType.subTopic },
+      ];
+      
+      const expectedError = new Error(
+        `User is not authorised to perform this action`,
+      );
+
+      await expect(
+        messageLogic.updateTags(messageId, tags, { ...validUser, userId: UNAUTHORISED_USER }),
+      ).rejects.toEqual(expectedError);
+    })
   });
 });

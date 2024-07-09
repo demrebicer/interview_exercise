@@ -12,6 +12,8 @@ import {
   LikeMessageDto,
   ReactionDto,
   PollDto,
+  TagDto,
+  TagType,
 } from './models/message.dto';
 import { ObjectID } from 'mongodb';
 import { IAuthenticatedUser } from '../authentication/jwt.strategy';
@@ -601,6 +603,14 @@ describe('RichMessageContentResolver', () => {
     ): Promise<ChatMessage> {
       return Promise.resolve(chatMessage);
     }
+
+    updateTags(
+      messageId: ObjectID,
+      tags: TagDto[],
+      authenticatedUser?: IAuthenticatedUser,
+    ): Promise<ChatMessage> {
+      return Promise.resolve(chatMessage);
+    }
   }
 
   beforeEach(async () => {
@@ -663,6 +673,30 @@ describe('RichMessageContentResolver', () => {
       expect(messageLogic.removeVote).toBeCalledWith(
         messageId,
         option,
+        authenticatedUser,
+      );
+    });
+  });
+
+  describe('updateTags', () => {
+    it('should be defined', () => {
+      expect(resolver.updateTags).toBeDefined();
+    });
+
+    it('should be able to update tags', () => {
+      // prepare
+      jest.spyOn(messageLogic, 'updateTags');
+
+      const tags: TagDto[] = [
+        { id: 'tag1', type: TagType.subTopic },
+        { id: 'tag2', type: TagType.subTopic },
+      ];
+      resolver.updateTags(messageId, tags, authenticatedUser);
+
+      // assert
+      expect(messageLogic.updateTags).toBeCalledWith(
+        messageId,
+        tags,
         authenticatedUser,
       );
     });

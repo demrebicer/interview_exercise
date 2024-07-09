@@ -6,6 +6,7 @@ import { ChatMessageModel, ChatMessageSchema } from './models/message.model';
 
 import { ConfigManagerModule } from '../configuration/configuration-manager.module';
 import {getTestConfiguration}  from '../configuration/configuration-manager.utils';
+import { TagDto, TagType } from './models/message.dto';
 
 const id = new ObjectID('5fe0cce861c8ea54018385af');
 const conversationId = new ObjectID();
@@ -19,6 +20,7 @@ class TestMessageData extends MessageData {
   }
 }
 
+jest.retryTimes(3); //To handle database execution delay
 describe('MessageData', () => {
   let messageData: TestMessageData;
 
@@ -122,6 +124,66 @@ describe('MessageData', () => {
       // And that is it now deleted
       const deletedMessage = await messageData.delete(new ObjectID(message.id));
       expect(deletedMessage.deleted).toEqual(true);
+    });
+  });
+
+  describe('updateTags', () => {
+    it('successfully updates tags on a message', async () => {
+      const conversationId = new ObjectID();
+      const message = await messageData.create(
+        { conversationId, text: 'Message to tag' },
+        senderId,
+      );
+
+      const tags: TagDto[] = [
+        { id: 'tag1', type: TagType.subTopic },
+        { id: 'tag2', type: TagType.subTopic },
+      ];
+
+      const updatedMessage = await messageData.updateTags(
+        new ObjectID(message.id),
+        tags,
+      );
+
+      const updatedTags = updatedMessage.tags?.map(({ id, type }) => ({ id, type })) || [];
+
+      expect(updatedTags).toEqual(tags);
+    });
+  });
+
+  describe('removeTags', () => {
+    it('successfully removes tags from a message', async () => {
+      const conversationId = new ObjectID();
+      var tags: TagDto[] = [
+        { id: 'tag1', type: TagType.subTopic },
+        { id: 'tag2', type: TagType.subTopic },
+      ];
+
+      const message = await messageData.create(
+        { conversationId, text: 'Message to tag' },
+        senderId,
+      );
+
+      const updatedMessage = await messageData.updateTags(
+        new ObjectID(message.id),
+        tags,
+      );
+
+      const updatedTags = updatedMessage.tags?.map(({ id, type }) => ({ id, type })) || [];
+
+      expect(updatedTags).toEqual(tags);
+
+      tags = [tags[0]];
+
+      const removedMessage = await messageData.updateTags(
+        new ObjectID(message.id),
+        tags,
+      );
+
+      const removedTags = removedMessage.tags?.map(({ id, type }) => ({ id, type })) || [];
+
+      expect(removedTags).toEqual(tags);
+
     });
   });
 });
