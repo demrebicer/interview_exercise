@@ -10,7 +10,7 @@ import {
   UseGuards,
   Res,
 } from '@nestjs/common';
-import { ApiSecurity, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { ApiSecurity, ApiResponse, ApiBody, ApiQuery } from '@nestjs/swagger';
 import { ConfigService } from '@nestjs/config';
 import { HttpCode } from '@nestjs/common';
 
@@ -34,6 +34,7 @@ import {
 } from './models/messagesFilterInput';
 import { isDateDifferenceWithin7Days } from '../message/utils/message.helper';
 import { Response } from 'express';
+import { TagType } from '../message/models/message.dto';
 
 @Controller('conversation')
 export class ConversationController {
@@ -170,19 +171,33 @@ export class ConversationController {
     description: 'Forbidden',
   })
   @HttpCode(200)
+  @ApiQuery({ name: 'conversationIds', required: true, type: [String], description: 'Array of conversation ids' })
+  @ApiQuery({ name: 'startDate', required: true, type: String, description: 'Start date' })
+  @ApiQuery({ name: 'endDate', required: true, type: String, description: 'End date' })
+  @ApiQuery({ name: 'tag_id', required: false, type: String, description: 'Tag ID' })
+  @ApiQuery({ name: 'tag_type', required: false, type: String, description: 'Tag Type' })
   async getMessages(
     @Query('conversationIds') conversationIds: string[],
     @Query('startDate') startDate: string,
     @Query('endDate') endDate: string,
-    @Res({ passthrough: true }) res: Response,
+    @Query('tag_id') tag_id?: string,
+    @Query('tag_type') tag_type?: string,
+    @Res({ passthrough: true }) res?: Response,
   ): Promise<MessageGroupedByConversationOutput[]> {
     const messagesFilterInput: MessagesFilterInput = {
       startDate,
       endDate,
       conversationIds,
+      tag_id,
+      tag_type,
     };
+
+    if (tag_type !== undefined && !Object.values(TagType).includes(tag_type as TagType)) {
+      res?.status(403).send(`Invalid tag type. Available tag types are [${Object.values(TagType).join(', ')}]`);
+    }
+    
     if (!isDateDifferenceWithin7Days(startDate, endDate)) {
-      res.status(403).send('Duration must be with in 7 days');
+      res?.status(403).send('Duration must be with in 7 days');
     }
     return await this.conversationLogic.getMessagesByConversation(
       messagesFilterInput,

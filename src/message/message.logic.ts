@@ -320,11 +320,13 @@ export class MessageLogic implements IMessageLogic {
   }
 
   async getMessagesByConversation(messagesFilterInput: MessagesFilterInput) {
-    const { conversationIds, startDate, endDate } = messagesFilterInput;
+    const { conversationIds, startDate, endDate, tag_id, tag_type } = messagesFilterInput;
     return await this.messageData.getMessagesGroupedByConversation(
       conversationIds.map((id) => new Types.ObjectId(id)),
       startDate,
       endDate,
+      tag_id,
+      tag_type,
     );
   }
 

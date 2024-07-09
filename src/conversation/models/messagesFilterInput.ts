@@ -27,4 +27,18 @@ export class MessagesFilterInput {
   })
   @IsOptional()
   endDate: string;
+
+  @ApiProperty({
+    description: 'Tag ID for the messages to be filtered',
+    required: false,
+  })
+  @IsOptional()
+  tag_id?: string;
+
+  @ApiProperty({
+    description: 'Tag Type for the messages to be filtered',
+    required: false,
+  })
+  @IsOptional()
+  tag_type?: string;
 }

@@ -539,6 +539,7 @@
                         "name": "conversationIds",
                         "required": true,
                         "in": "query",
+                        "description": "Array of conversation ids",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -550,6 +551,7 @@
                         "name": "startDate",
                         "required": true,
                         "in": "query",
+                        "description": "Start date",
                         "schema": {
                             "type": "string"
                         }
@@ -558,6 +560,25 @@
                         "name": "endDate",
                         "required": true,
                         "in": "query",
+                        "description": "End date",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tag_id",
+                        "required": false,
+                        "in": "query",
+                        "description": "Tag ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "tag_type",
+                        "required": false,
+                        "in": "query",
+                        "description": "Tag Type",
                         "schema": {
                             "type": "string"
                         }
