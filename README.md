@@ -81,10 +81,36 @@ We would like to extend the functionality, to allow the sender of a message to a
 While we don't expect everyone to complete this part of the exercise, it will form the basis of disucssion in an interview. Please make as much progress with this, as you feel comfortable doing. Don't allow it to be all-consuming. A couple of hours at most for all parts of the exercise. 
 
 We'd love to hear about
-* How you would go about implementing the solution
-* What problems you might encounter
-* How you would go about testing
-* What you might do differently
+* Q. How you would go about implementing the solution
+  
+    A. I divided the task into four parts. 
+
+    First, I implemented the tagging feature for messages by updating models and DTOs, and adding a new GraphQL endpoint updateTags for updating tags on messages. Tags are stored as an empty array when a message is created and updated later via this endpoint. 
+    
+    Second, I wrote unit tests to ensure tags are correctly added, updated, and deleted. 
+    
+    Third, I extended the existing route for fetching messages to allow filtering by tags, adding optional parameters tag_id and tag_type. 
+    
+    Fourth, I created unit tests to verify the filtering functionality.
+
+* Q. What problems you might encounter
+    
+    A. The main challenge was unfamiliarity with GraphQL, which made implementation more complex. Understanding how to use GraphQL Playground for testing also took some time. I managed to complete this challenge by examining the existing GraphQL codes in the repo.
+
+* Q. How you would go about testing
+
+    A. I focused on creating unit tests for all tag operations, including adding, updating, and deleting tags. Additionally, I wrote unit tests to verify the filtering functionality based on tags.
+
+* Q. What you might do differently
+
+    A. In a real-world scenario, I would not have started coding directly because some information was missing. My first conversation would be with the product manager to understand their vision for the interface. For example, currently, tags are added after messages are created, but the product manager might have wanted all messages in a group to automatically receive a tag. After understanding the product side's exact requirements, I would prepare a backend that aligns better with those needs. This approach would aim to increase efficiency by minimizing future refactor requests from the front-end team.
+
+    As for approach, considering that conversations and their messages may have separate and different tags, I created two different DTOs that are independent of each other. 
+    
+    However, another option would be to collect all tags under a single enum, allowing for the same types for both conversations and messages.
+
+
+
 
 # Additional
 The following docs are from the live service repo. You may find them helpful. 
