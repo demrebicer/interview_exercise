@@ -1,10 +1,12 @@
 import {
   Field,
   Float,
+  ID,
   InputType,
   ObjectType,
   registerEnumType,
 } from '@nestjs/graphql';
+import { ApiProperty } from '@nestjs/swagger';
 import { ObjectID } from 'mongodb';
 
 export enum GifType {
@@ -15,6 +17,36 @@ export enum GifType {
 registerEnumType(GifType, {
   name: 'GifType',
 });
+
+export enum TagType {
+  subTopic = 'subTopic',
+}
+
+registerEnumType(TagType, {
+  name: 'TagType',
+});
+
+@InputType()
+export class TagDto {
+  @ApiProperty({ type: String })
+  @Field(() => ID)
+  id: string;
+
+  @ApiProperty({ enum: TagType })
+  @Field(() => TagType)
+  type: TagType;
+}
+
+@ObjectType()
+export class TagDtoOutput {
+  @ApiProperty({ type: String })
+  @Field(() => ID)
+  id: string;
+
+  @ApiProperty({ enum: TagType })
+  @Field(() => TagType)
+  type: TagType;
+}
 
 @InputType()
 export class ReplyMessageDto {

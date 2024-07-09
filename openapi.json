@@ -937,6 +937,24 @@
                 "type": "object",
                 "properties": {}
             },
+            "TagDtoOutput": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "subTopic"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "type"
+                ]
+            },
             "ChatMessage": {
                 "type": "object",
                 "properties": {
@@ -979,6 +997,12 @@
                     },
                     "isSenderBlocked": {
                         "type": "boolean"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TagDtoOutput"
+                        }
                     }
                 },
                 "required": [

@@ -23,18 +23,19 @@ enum ContextType {
   isNewsFeedConversation
 }
 
+type TagDtoOutput {
+  id: ID!
+  type: TagType!
+}
+
+enum TagType {
+  subTopic
+}
+
 type Reaction {
   reaction: String!
   reactionUnicode: String!
   userIds: [String!]!
-}
-
-type ChatConversation {
-  id: ID!
-  unreadMessageCount: Int
-  lastMessage: ChatMessage
-  pinnedMessages: [ChatMessage!]!
-  pinnedMessagesCount: Int!
 }
 
 type UserField {
@@ -107,6 +108,7 @@ type ChatMessage {
   richContent: RichMessageContent
   reactions: [Reaction!]
   isSenderBlocked: Boolean
+  tags: [TagDtoOutput!]
 }
 
 """
@@ -117,6 +119,14 @@ scalar DateTime
 type PaginatedChatMessages {
   messages: [ChatMessage!]!
   hasMore: Boolean!
+}
+
+type ChatConversation {
+  id: ID!
+  unreadMessageCount: Int
+  lastMessage: ChatMessage
+  pinnedMessages: [ChatMessage!]!
+  pinnedMessagesCount: Int!
 }
 
 type LastRead {
@@ -160,6 +170,7 @@ type Mutation {
   removeReactionFromMessage(reactionDto: ReactionDto!): ChatMessage!
   addVote(option: String!, chatMessageId: ObjectId!): Poll!
   removeVote(option: String!, chatMessageId: ObjectId!): Poll!
+  updateTags(tags: [TagDto!]!, chatMessageId: ObjectId!): ChatMessage!
 }
 
 input MarkReadMessageDTO {
@@ -246,4 +257,9 @@ input ReactionDto {
   reactionUnicode: String!
   messageId: ObjectId!
   conversationId: ObjectId!
+}
+
+input TagDto {
+  id: ID!
+  type: TagType!
 }

@@ -7,7 +7,7 @@ import {
   ChatMessageModel,
 } from './models/message.model';
 import { ChatMessage, PaginatedChatMessages } from './models/message.entity';
-import { MessageDto, GetMessageDto } from './models/message.dto';
+import { MessageDto, GetMessageDto, TagDto } from './models/message.dto';
 import { ObjectID } from 'mongodb';
 import { createRichContent } from './utils/message.helper';
 import { MessageGroupedByConversationOutput } from '../conversation/models/messagesFilterInput';
@@ -363,6 +363,25 @@ export class MessageData {
       throw new Error(
         `Failed to remove user: ${userId.toHexString()} from option: ${option} for messageId: ${messageId.toHexString()}`,
       );
+    }
+
+    return chatMessageToObject(updatedResult);
+  }
+
+  async updateTags(
+    messageId: ObjectID,
+    tags: TagDto[],
+  ): Promise<ChatMessageModel> {
+    const updatedResult = await this.chatMessageModel.findByIdAndUpdate(
+      messageId,
+      { tags: tags },
+      {
+        new: true,
+      },
+    );
+
+    if (!updatedResult) {
+      throw new Error(`Failed to add tags to message: ${messageId}`);
     }
 
     return chatMessageToObject(updatedResult);

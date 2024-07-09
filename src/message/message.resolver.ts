@@ -21,6 +21,7 @@ import {
   LikeMessageDto,
   ResolveMessageDto,
   ReactionDto,
+  TagDto,
 } from './models/message.dto';
 import { MessageLogic } from './message.logic';
 import {
@@ -217,5 +218,15 @@ export class RichMessageContentResolver {
     );
 
     return response.richContent?.poll;
+  }
+
+  @Mutation(() => ChatMessage)
+  @UseGuards(GqlAuthGuard)
+  async updateTags(
+    @Args('chatMessageId') chatMessageId: ObjectId,
+    @Args('tags', { type: () => [TagDto] }) tags: TagDto[],
+    @AuthenticatedUser() authenticatedUser: IAuthenticatedUser,
+  ): Promise<ChatMessage> {
+    return await this.messageLogic.updateTags(chatMessageId, tags, authenticatedUser);
   }
 }
