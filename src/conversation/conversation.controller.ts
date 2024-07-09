@@ -70,7 +70,7 @@ export class ConversationController {
     @Param('conversationId') conversationId: string,
     @Body() createChatConversationDto: CreateChatConversationDto,
   ) {
-    throw new Error('Endpoint not implemented');
+    return this.conversationLogic.update(conversationId, createChatConversationDto)
   }
 
   @Put(':conversationId/tags')

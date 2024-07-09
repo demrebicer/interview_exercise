@@ -396,6 +396,21 @@ export class ConversationLogic implements IConversationLogic {
     return this.conversationData.getLastMessages(lastMessageInput);
   }
 
+  async update(
+    conversationId: string,
+    data: CreateChatConversationDto,
+  ): Promise<ConversationDTO> {
+    try {
+      const updatedRecord = await this.conversationData.update(
+        conversationId,
+        data
+      );
+      return updatedRecord;
+    } catch (error) {
+      throw new HttpException('Conversation not found', HttpStatus.NOT_FOUND);
+    }
+  } 
+
   async updateTags(
     conversationId: string,
     tags: Tag[],

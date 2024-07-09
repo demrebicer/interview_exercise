@@ -251,7 +251,14 @@
                 },
                 "responses": {
                     "200": {
-                        "description": ""
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ChatConversationModel"
+                                }
+                            }
+                        }
                     }
                 },
                 "security": [
@@ -1080,6 +1087,10 @@
                     "currentUserId"
                 ]
             },
+            "ChatConversationModel": {
+                "type": "object",
+                "properties": {}
+            },
             "AddMemberDTO": {
                 "type": "object",
                 "properties": {
@@ -1091,10 +1102,6 @@
                 "required": [
                     "userId"
                 ]
-            },
-            "ChatConversationModel": {
-                "type": "object",
-                "properties": {}
             },
             "BlockUserDTO": {
                 "type": "object",
